@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 
+import cors from 'cors';
+
 import 'express-async-errors';
 
 import morgan from 'morgan';
@@ -10,9 +12,14 @@ import groupsRoutes from './routes/groups';
 import addUsersToGroupRouter from './routes/addUsersToGroup';
 import removeUsersFromGroupRouter from './routes/removeUsersFromGroup';
 
+import loginRouter from './routes/login';
+import authenticateUser from './middlewares/authenticateUser';
+
 import logger from './logger';
 
 const app = express();
+
+app.use(cors());
 
 app.use((req, res, next) => {
   express.json()(req, res, (err) => {
@@ -51,11 +58,13 @@ process.on('unhandledRejection', (reason) => {
   logger.error(`Unhandled rejection detected: ${reason}`);
 });
 
-app.use('/api/users', usersRoutes);
-app.use('/api/groups', groupsRoutes);
+app.use('/api/users', authenticateUser, usersRoutes);
+app.use('/api/groups', authenticateUser, groupsRoutes);
 
-app.use('/api/addUsersToGroup', addUsersToGroupRouter);
-app.use('/api/removeUsersFromGroup', removeUsersFromGroupRouter);
+app.use('/api/addUsersToGroup', authenticateUser, addUsersToGroupRouter);
+app.use('/api/removeUsersFromGroup', authenticateUser, removeUsersFromGroupRouter);
+
+app.use('/api/login', loginRouter);
 
 app.use((req, res) => {
   const err = {

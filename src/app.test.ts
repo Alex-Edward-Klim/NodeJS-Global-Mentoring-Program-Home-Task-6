@@ -9,9 +9,11 @@ describe('Test API on a real DataBase', () => {
     dataBase.close();
   });
 
+  const token = process.env.TOKEN;
+
   describe('get all users', () => {
     test('should respond with 200 and contain array of users', async () => {
-      const response = await request(app).get('/api/users').send();
+      const response = await request(app).get('/api/users').set('Authorization', `Bearer ${token}`).send();
 
       expect(response.statusCode).toBe(200);
       expect(Array.isArray(response.body)).toBeTruthy();
@@ -20,13 +22,13 @@ describe('Test API on a real DataBase', () => {
 
   describe('get user by id', () => {
     test('should respond with 200 and contain user data', async () => {
-      const response = await request(app).get('/api/users/c1d6f40b-5bb9-422f-958c-e6fe8db24046').send();
+      const response = await request(app).get('/api/users/3df98693-a1dc-4cdf-986e-efe053d40ea4').set('Authorization', `Bearer ${token}`).send();
 
       expect(response.statusCode).toBe(200);
       expect(response.body.login).toEqual('a');
       expect(response.body.password).toEqual('123xyz');
       expect(response.body.age).toEqual('18');
-      expect(response.body.id).toEqual('c1d6f40b-5bb9-422f-958c-e6fe8db24046');
+      expect(response.body.id).toEqual('3df98693-a1dc-4cdf-986e-efe053d40ea4');
     });
   });
 
@@ -35,7 +37,7 @@ describe('Test API on a real DataBase', () => {
       let login = '';
       for (let i = 0; i < 10; i += 1) login += Math.floor(Math.random() * 10);
 
-      const response = await request(app).post('/api/users').send({
+      const response = await request(app).post('/api/users').set('Authorization', `Bearer ${token}`).send({
         login,
         password: '123xyz',
         age: 21,
@@ -56,13 +58,13 @@ describe('Test API on a real DataBase', () => {
 
       const testApp = request(app);
 
-      const response = await testApp.post('/api/users').send({
+      const response = await testApp.post('/api/users').set('Authorization', `Bearer ${token}`).send({
         login,
         password: '123xyz',
         age: 21,
       });
 
-      const secondResponse = await testApp.post('/api/users').send({
+      const secondResponse = await testApp.post('/api/users').set('Authorization', `Bearer ${token}`).send({
         login,
         password: '123xyz',
         age: 21,
@@ -75,7 +77,7 @@ describe('Test API on a real DataBase', () => {
 
   describe('update user by id', () => {
     test('should respond with 200 and contain updated user data', async () => {
-      const response = await request(app).patch('/api/users/106f39d7-b67a-429e-882a-d1b5551bb581').send({
+      const response = await request(app).patch('/api/users/2b817cd8-c561-43cb-867b-19081e0a31e6').set('Authorization', `Bearer ${token}`).send({
         age: 19,
       });
 
@@ -86,12 +88,12 @@ describe('Test API on a real DataBase', () => {
 
   describe('delete user by id', () => {
     test('should respond with 200 and isDeleted', async () => {
-      const { body: usersArr } = await request(app).get('/api/users').send();
+      const { body: usersArr } = await request(app).get('/api/users').set('Authorization', `Bearer ${token}`).send();
 
       const randomUser = usersArr.find((user: UserType) => user.login.length === 10);
       const { id } = randomUser;
 
-      const response = await request(app).delete(`/api/users/${id}`).send();
+      const response = await request(app).delete(`/api/users/${id}`).set('Authorization', `Bearer ${token}`).send();
 
       expect(response.statusCode).toBe(200);
       expect(response.text).toEqual('User Deleted');
