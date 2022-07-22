@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   const bearerHeader = req.headers.authorization;
 
-  const token = bearerHeader && bearerHeader.split(' ')[1];
+  const token = bearerHeader?.split(' ')[1];
 
   if (!token) {
     return res.sendStatus(401);

@@ -75,14 +75,14 @@ app.use((req, res) => {
   res.status(404).json(err);
 });
 
-// eslint-disable-next-line
 app.use(async (err: any, req: Request, res: Response, next: NextFunction) => {
   if (err) {
     if (res.headersSent) {
-      return next(err);
+      next(err);
+    } else {
+      logger.error(err.message);
+      res.status(err.status || 500).send(err.message);
     }
-    logger.error(err.message);
-    return res.status(err.status || 500).send(err.message);
   }
 });
 
