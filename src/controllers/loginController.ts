@@ -8,7 +8,7 @@ const login = async (req: Request, res: Response) => {
   const user: any = await loginService.getUserByLogin(username);
 
   if (!user) {
-    return res.status(404).send('User not found');
+    return res.status(400).send('Invalid credentials');
   }
 
   if (user.password === password) {
@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response) => {
     return res.json({ accessToken });
   }
 
-  return res.status(404).send('Incorrect password');
+  return res.status(400).send('Invalid credentials');
 };
 
 const loginController = {
